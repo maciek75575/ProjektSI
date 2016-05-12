@@ -16,14 +16,22 @@ class PlayerShip
 public:
 	Sprite shipSprite;
 	Texture shipTexture;
-	int health, maxHealth;
+	int health, maxHealth, killCount;
+	unsigned int score;
 	float coolDown, remainingCool;
 	float speed;
 
 	Missile mis;
 	std::vector<Missile> playerMissles;
 
+	PlayerShip::PlayerShip() {};
+
 	PlayerShip::PlayerShip(Vector2f pos, String shipTex, String missTex, int hp, float cool, float speedShip, float rot, float speedMissle, int power)
+	{
+		init(pos, shipTex, missTex, hp, cool, speedShip, rot, speedMissle, power);
+	}
+
+	void init(Vector2f pos, String shipTex, String missTex, int hp, float cool, float speedShip, float rot, float speedMissle, int power)
 	{
 		shipTexture.loadFromFile(shipTex);
 		shipSprite.setTexture(shipTexture);
@@ -33,6 +41,9 @@ public:
 		coolDown = cool;
 		speed = speedShip;
 		remainingCool = 0.f;
+		score = 0;
+		killCount = 0;
+		playerMissles.clear();
 
 		mis.init(missTex, rot, speedMissle, power);
 	}
@@ -95,6 +106,9 @@ public:
 				&& (en.enemies[i].health > 0))
 			{
 				health -= en.enemies[i].health;
+				killCount++;
+				if (score < en.enemies[i].value) score = 0;
+				else score -= en.enemies[i].value;
 				en.enemies[i].health = 0;
 			}
 			else
@@ -106,6 +120,11 @@ public:
 					if ((enemy.left<misPos.x) && (enemy.left + enemy.width>misPos.x) && (enemy.top<misPos.y) && (enemy.top + enemy.height>misPos.y))
 					{
 						en.enemies[i].health -= playerMissles[j].power;
+						if (en.enemies[i].health <= 0)
+						{
+							killCount++;
+							score += en.enemies[i].value;
+						}
 						playerMissles.erase(playerMissles.begin() + j);
 						j--;
 					}
@@ -126,7 +145,6 @@ public:
 				en.enemies[i].missles = enemyMissles;
 
 				i++;
-				std::cout<<health<<std::endl;
 			}
 		}
 	}

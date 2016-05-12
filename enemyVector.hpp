@@ -18,9 +18,16 @@ public:
 
 	EnemyVector::EnemyVector() {}
 
-	EnemyVector::EnemyVector(Vector2f pos, String shipTex, String missTex, int hp, float cool, float speedShip, float rot, float speedMissle, int power)
+	EnemyVector::EnemyVector(Vector2f pos, String shipTex, String missTex, int hp, unsigned int value, float cool, float speedShip, float rot, float speedMissle, int power)
 	{
-		enemy.init(pos, shipTex, missTex, hp, cool, speedShip, rot, speedMissle, power);
+		enemy.init(pos, shipTex, missTex, hp, value, cool, speedShip, rot, speedMissle, power);
+		enemies.clear();
+	}
+
+	void init(Vector2f pos, String shipTex, String missTex, int hp, unsigned int value, float cool, float speedShip, float rot, float speedMissle, int power)
+	{
+		enemy.init(pos, shipTex, missTex, hp, value, cool, speedShip, rot, speedMissle, power);
+		enemies.clear();
 	}
 
 	void addEnemy(Vector2f pos)

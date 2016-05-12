@@ -160,8 +160,11 @@
     <Text Include="temp01.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="background.hpp" />
     <ClInclude Include="enemyShip.hpp" />
     <ClInclude Include="enemyVector.hpp" />
+    <ClInclude Include="game.hpp" />
+    <ClInclude Include="gui.hpp" />
     <ClInclude Include="head.h" />
     <ClInclude Include="missle.hpp" />
     <ClInclude Include="playerShip.hpp" />

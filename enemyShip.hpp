@@ -16,6 +16,7 @@ public:
 	Sprite shipSprite;
 	Texture shipTexture;
 	int health, maxHealth;
+	int value;
 	float coolDown, remainingCool;
 	float speed;
 
@@ -24,12 +25,12 @@ public:
 
 	EnemyShip::EnemyShip() {}
 
-	EnemyShip::EnemyShip(Vector2f pos, String shipTex, String missTex, int hp, float cool, float speedShip, float rot, float speedMissle, int power)
+	EnemyShip::EnemyShip(Vector2f pos, String shipTex, String missTex, int hp, unsigned int value, float cool, float speedShip, float rot, float speedMissle, int power)
 	{
-		init(pos, shipTex, missTex, hp, cool, speedShip, rot, speedMissle, power);
+		init(pos, shipTex, missTex, hp, value, cool, speedShip, rot, speedMissle, power);
 	}
 
-	void init(Vector2f pos, String shipTex, String missTex, int hp, float cool, float speedShip, float rot, float speedMissle, int power)
+	void init(Vector2f pos, String shipTex, String missTex, int hp, unsigned int value, float cool, float speedShip, float rot, float speedMissle, int power)
 	{
 		shipTexture.loadFromFile(shipTex);
 		shipSprite.setTexture(shipTexture);
@@ -37,6 +38,7 @@ public:
 		shipSprite.setPosition(pos);
 		health = maxHealth = hp;
 		coolDown = cool;
+		this->value = value;
 		speed = speedShip;
 		remainingCool = 0.f;
 
