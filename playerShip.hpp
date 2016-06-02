@@ -7,6 +7,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "missle.hpp"
+#include "playerUpgrades.hpp"
 #include "enemyVector.hpp"
 
 using namespace sf;
@@ -17,9 +18,11 @@ public:
 	Sprite shipSprite;
 	Texture shipTexture;
 	int health, maxHealth, killCount;
-	unsigned int score;
+	unsigned int score, cash;
 	float coolDown, remainingCool;
 	float speed;
+
+	PlayerUpgrades upgrades;
 
 	Missile mis;
 	std::vector<Missile> playerMissles;
@@ -43,6 +46,7 @@ public:
 		remainingCool = 0.f;
 		score = 0;
 		killCount = 0;
+		cash = 0;
 		playerMissles.clear();
 
 		mis.init(missTex, rot, speedMissle, power);
@@ -67,9 +71,51 @@ public:
 
 		if ((Keyboard::isKeyPressed(Keyboard::W)) && (remainingCool <= 0.f))
 		{
-			mis.missleSprite.setPosition(shipSprite.getPosition() + Vector2f(30.f, 10.f));
-			playerMissles.push_back(mis);
-			remainingCool = coolDown;
+			mis.power = upgrades.misslePower;
+			switch (upgrades.missleLevel)
+			{
+			case 3:
+				mis.missleSprite.setPosition(shipSprite.getPosition() + Vector2f(30.f, 10.f));
+				mis.missleSprite.setRotation(65);
+				playerMissles.push_back(mis);
+				mis.missleSprite.setRotation(115);
+				playerMissles.push_back(mis);
+			case 1:
+				mis.missleSprite.setPosition(shipSprite.getPosition() + Vector2f(30.f, 10.f));
+				mis.missleSprite.setRotation(90);
+				playerMissles.push_back(mis);
+				remainingCool = coolDown;
+				break;
+			case 6:
+				mis.missleSprite.setPosition(shipSprite.getPosition() + Vector2f(25.f, -7.f));
+				mis.missleSprite.setRotation(40);
+				playerMissles.push_back(mis);
+				mis.missleSprite.setPosition(shipSprite.getPosition() + Vector2f(25.f, 27.f));
+				mis.missleSprite.setRotation(140);
+				playerMissles.push_back(mis);
+			case 5:
+				mis.missleSprite.setPosition(shipSprite.getPosition() + Vector2f(25.f, -7.f));
+				mis.missleSprite.setRotation(65);
+				playerMissles.push_back(mis);
+				mis.missleSprite.setPosition(shipSprite.getPosition() + Vector2f(25.f, 27.f));
+				mis.missleSprite.setRotation(115);
+				playerMissles.push_back(mis);
+			case 4:
+				mis.missleSprite.setPosition(shipSprite.getPosition() + Vector2f(30.f, 4.f));
+				mis.missleSprite.setRotation(65);
+				playerMissles.push_back(mis);
+				mis.missleSprite.setPosition(shipSprite.getPosition() + Vector2f(30.f, 16.f));
+				mis.missleSprite.setRotation(115);
+				playerMissles.push_back(mis);
+			case 2:
+				mis.missleSprite.setPosition(shipSprite.getPosition() + Vector2f(30.f, 4.f));
+				mis.missleSprite.setRotation(90);
+				playerMissles.push_back(mis);
+				mis.missleSprite.setPosition(shipSprite.getPosition() + Vector2f(30.f, 16.f));
+				playerMissles.push_back(mis);
+				remainingCool = coolDown;
+				break;
+			}
 		}
 
 		if (remainingCool > 0.f)
@@ -80,7 +126,7 @@ public:
 		int i = 0;
 		while (i < playerMissles.size())
 		{
-			playerMissles[i].move(delta, false);
+			playerMissles[i].move(delta);
 			if (playerMissles[i].missleSprite.getPosition().x > WIDTH + 150)
 			{
 				playerMissles.erase(playerMissles.begin() + i);
@@ -123,6 +169,7 @@ public:
 						if (en.enemies[i].health <= 0)
 						{
 							killCount++;
+							cash += en.enemies[i].value / 10;
 							score += en.enemies[i].value;
 						}
 						playerMissles.erase(playerMissles.begin() + j);

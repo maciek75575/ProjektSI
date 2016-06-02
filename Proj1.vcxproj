@@ -168,6 +168,7 @@
     <ClInclude Include="head.h" />
     <ClInclude Include="missle.hpp" />
     <ClInclude Include="playerShip.hpp" />
+    <ClInclude Include="playerUpgrades.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

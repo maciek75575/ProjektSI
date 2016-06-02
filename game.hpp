@@ -26,11 +26,11 @@ public:
 	View view;
 	PlayerShip player01;
 	EnemyVector enemies01;
+	EnemyVector enemies02;
 	Background bg;
 	Clock clock;
 
 	Font pixel3;
-	Text pauseText;
 	Text gameOverText;
 
 	Text contin;
@@ -41,6 +41,7 @@ public:
 
 	//----------
 	float wait;
+	float wait2;
 	//----------
 
 	Game::Game()
@@ -57,12 +58,9 @@ public:
 		init();
 
 		pixel3.loadFromFile("fonts/LLPIXEL3.ttf");
-		pauseText.setFont(pixel3);
-		pauseText.setCharacterSize(150);
-		pauseText.setColor(Color(0, 0, 0, 200));
-		gameOverText = pauseText;
-		pauseText.setString("GAME PAUSED");
-		pauseText.setOrigin(pauseText.getLocalBounds().left + pauseText.getLocalBounds().width*.5f, pauseText.getLocalBounds().top);
+		gameOverText.setFont(pixel3);
+		gameOverText.setCharacterSize(150);
+		gameOverText.setColor(Color(0, 0, 0, 200));
 		gameOverText.setString("GAME OVER");
 		gameOverText.setOrigin(gameOverText.getLocalBounds().left + gameOverText.getLocalBounds().width*.5f, gameOverText.getLocalBounds().top);
 
@@ -87,6 +85,7 @@ public:
 	{
 		player01.init(Vector2f(WIDTH * .5f, HEIGHT * .5f), "textures/ship01.png", "textures/missle01.png", 400, .3f, 300.f, 90.f, 600.f, 50);
 		enemies01.init(Vector2f(1300.f, 360.f), "textures/ship02.png", "textures/missle02.png", 100, 100, 1.f, 200.f, -90.f, 450.f, 50);
+		enemies02.init(Vector2f(1300.f, 360.f), "textures/ship03.png", "textures/missle03.png", 150, 200, 1.5f, 150.f, -90.f, 350.f, 150);
 	}
 
 	void play()
@@ -94,6 +93,9 @@ public:
 		bool pauseFlag = false;
 		bool menuFlag = true;
 		bool overFlag = false;
+		bool tFlag = false;
+		bool yFlag = false;
+		bool hFlag = false;
 		int menuRet = 0;
 		float deltaTime = .01f;
 		while (window->isOpen())
@@ -107,7 +109,7 @@ public:
 				}
 			}
 			
-			if ((Keyboard::isKeyPressed(Keyboard::P)) && (!menuFlag))
+			if ((Keyboard::isKeyPressed(Keyboard::P)) && (!menuFlag) && (!overFlag))
 			{
 				float tmp = clock.getElapsedTime().asSeconds();
 				pauseFlag = !pauseFlag;
@@ -139,6 +141,45 @@ public:
 				deltaTime = clock.restart().asSeconds();
 				deltaTime = tmp;
 			}
+
+			if (Keyboard::isKeyPressed(Keyboard::T))
+			{
+				if (!tFlag)
+				{
+					tFlag = true;
+					player01.cash = player01.upgrades.missleLevelUp(player01.cash);
+				}
+			}
+			else tFlag = false;
+
+			if (Keyboard::isKeyPressed(Keyboard::Y))
+			{
+				if (!yFlag)
+				{
+					yFlag = true;
+					player01.cash = player01.upgrades.misslePowerUp(player01.cash);
+				}
+			}
+			else yFlag = false;
+
+			if (Keyboard::isKeyPressed(Keyboard::H))
+			{
+				if (!hFlag)
+				{
+					hFlag = true;
+					if ((player01.cash >= 100) && (player01.health < player01.maxHealth))
+					{
+						player01.cash -= 100;
+						player01.health += 200;
+						if (player01.health > player01.maxHealth) player01.health = player01.maxHealth;
+					}
+				}
+			}
+			else hFlag = false;
+
+			//--
+			if ((Keyboard::isKeyPressed(Keyboard::B)) && (Keyboard::isKeyPressed(Keyboard::M))) player01.cash+=10;
+			//--
 
 			if (menuRet == 2)
 			{
@@ -175,16 +216,27 @@ public:
 			enemies01.addEnemy(Vector2f(WIDTH + 150.f, 100.f + (rand() % (HEIGHT - 200))));
 			wait = 1.5f + (rand() % 20) * .1f;
 		}
+
+		if (wait2 > 0.f) wait2 -= deltaTime;
+		else
+		{
+			enemies02.addEnemy(Vector2f(WIDTH + 150.f, 100.f + (rand() % (HEIGHT - 200))));
+			wait2 = 2.f + (rand() % 40) * .1f;
+		}
+
 		enemies01.control(deltaTime);
+		enemies02.control(deltaTime);
 
 		player01.collision(enemies01);
+		player01.collision(enemies02);
 
 		player01.draw(*window);
 		enemies01.draw(*window);
+		enemies02.draw(*window);
 
 		Vector2f viewCenter(WIDTH * .5f + (player01.shipSprite.getPosition().x - WIDTH * .5f) * .15f, HEIGHT * .5f + (player01.shipSprite.getPosition().y - HEIGHT * .5f) * .15f);
 
-		myGui.update(player01.health, player01.maxHealth, player01.score, player01.killCount, viewCenter);
+		myGui.update(player01.health, player01.maxHealth, player01.score, player01.killCount, player01.cash, viewCenter);
 		myGui.draw(*window);
 
 		view.setCenter(viewCenter);
@@ -198,20 +250,33 @@ public:
 
 		bg.update(deltaTime);
 		bg.draw(*window);
-
+		
 		if (wait > 0.f) wait -= deltaTime;
 		else
 		{
 			enemies01.addEnemy(Vector2f(WIDTH + 150.f, 100.f + (rand() % (HEIGHT - 200))));
 			wait = 1.5f + (rand() % 20) * .1f;
 		}
+
+		if (wait2 > 0.f) wait2 -= deltaTime;
+		else
+		{
+			enemies02.addEnemy(Vector2f(WIDTH + 150.f, 100.f + (rand() % (HEIGHT - 200))));
+			wait2 = 2.f + (rand() % 40) * .1f;
+		}
+
 		enemies01.control(deltaTime);
+		enemies02.control(deltaTime);
+
+		player01.collision(enemies01);
+		player01.collision(enemies02);
 
 		enemies01.draw(*window);
+		enemies02.draw(*window);
 
 		Vector2f viewCenter(WIDTH * .5f + (player01.shipSprite.getPosition().x - WIDTH * .5f) * .15f, HEIGHT * .5f + (player01.shipSprite.getPosition().y - HEIGHT * .5f) * .15f);
 
-		myGui.update(player01.health, player01.maxHealth, player01.score, player01.killCount, viewCenter);
+		myGui.update(player01.health, player01.maxHealth, player01.score, player01.killCount, player01.cash, viewCenter);
 		myGui.draw(*window);
 
 		gameOverText.setPosition(viewCenter - Vector2f(0, 70));
@@ -231,12 +296,11 @@ public:
 		bg.draw(*window);
 		player01.draw(*window);
 		enemies01.draw(*window);
+		enemies02.draw(*window);
 
-		myGui.update(player01.health, player01.maxHealth, player01.score, player01.killCount, viewCenter);
+		myGui.update(player01.health, player01.maxHealth, player01.score, player01.killCount, player01.cash, viewCenter);
 		myGui.draw(*window);
-
-		pauseText.setPosition(viewCenter - Vector2f(0, 70));
-		window->draw(pauseText);
+		myGui.drawPause(*window);
 
 		view.setCenter(viewCenter);
 		window->setView(view);
@@ -252,8 +316,9 @@ public:
 		bg.draw(*window);
 		player01.draw(*window);
 		enemies01.draw(*window);
+		enemies02.draw(*window);
 
-		myGui.update(player01.health, player01.maxHealth, player01.score, player01.killCount, viewCenter);
+		myGui.update(player01.health, player01.maxHealth, player01.score, player01.killCount, player01.cash, viewCenter);
 		myGui.draw(*window);
 
 		bg.drawMenuBg(*window, viewCenter);

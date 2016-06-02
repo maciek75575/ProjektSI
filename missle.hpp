@@ -29,9 +29,47 @@ public:
 		power = pw;
 	}
 
-	void move(float delta, bool enemy=true)
+	void move(float delta)
 	{
-		if (enemy) missleSprite.move(Vector2f(-speed * delta, 0.f));
-		else missleSprite.move(Vector2f(speed * delta, 0.f));
+		float x, y;
+		x = y = speed * delta;
+		switch (int(missleSprite.getRotation()))
+		{
+		case 320:
+			x = -x;
+		case 40:
+			y *= -SIN50;
+			x *= COS50;
+			break;
+		case 295:
+			x = -x;
+		case 65:
+			y *= -SIN25;
+			x *= COS25;
+			break;
+		case 270:
+			x = -x;
+		case 90:
+			y = 0;
+			break;
+		case 245:
+			x = -x;
+		case 115:
+			y *= SIN25;
+			x *= COS25;
+			break;
+		case 220:
+			x = -x;
+		case 140:
+			y *= SIN50;
+			x *= COS50;
+			break;
+		default:
+			y = 0;
+			if (missleSprite.getRotation() >= 180) x = -x;
+			break;
+		}
+
+		missleSprite.move(Vector2f(x, y));
 	}
 };
