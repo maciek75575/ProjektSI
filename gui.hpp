@@ -13,8 +13,12 @@ public:
 	Text scoreText;
 	Text killText;
 	Text cashText;
+	Text pauseCashText;
 	Text pauseText;
 	Text controlsText;
+	Text upgradeText;
+	Text powerUpgradeText;
+	Text numberUpgradeText;
 
 	RectangleShape pauseBackground;
 
@@ -45,10 +49,16 @@ public:
 		pauseText.setOrigin(pauseText.getLocalBounds().left + pauseText.getLocalBounds().width*.5f, pauseText.getLocalBounds().top);
 
 		controlsText.setFont(pixel3);
-		controlsText.setCharacterSize(50);
 		controlsText.setColor(Color(255, 255, 255, 200));
-		controlsText.setString("Up, Down, Left, Right - Move\n W - Shoot\n  T - Upgrade missile number\n   Y - Upgrade missile power\n    H - Heal");
-		controlsText.setOrigin(pauseText.getLocalBounds().left + pauseText.getLocalBounds().width*.5f, pauseText.getLocalBounds().top);
+		upgradeText = controlsText;
+		controlsText.setCharacterSize(40);
+		powerUpgradeText = numberUpgradeText = controlsText;
+		controlsText.setString("H - Heal, Cost: 500\nUp, Down, Left, Right - Move\nW - Shoot");
+		controlsText.setOrigin(controlsText.getLocalBounds().left + controlsText.getLocalBounds().width*.5f, controlsText.getLocalBounds().top);
+
+		upgradeText.setCharacterSize(50);
+		upgradeText.setString("Upgrades");
+		upgradeText.setOrigin(upgradeText.getLocalBounds().left + upgradeText.getLocalBounds().width*.5f, upgradeText.getLocalBounds().top);
 
 		hpBackground.setFillColor(Color(0, 0, 0, 100));
 		hpBackground.setOutlineThickness(4.);
@@ -61,7 +71,7 @@ public:
 		pauseBackground.setSize(Vector2f(WIDTH, HEIGHT));
 	}
 
-	void update(int hp, int maxHp, unsigned int score, int kill, int cash, Vector2f center)
+	void update(int hp, int maxHp, unsigned int score, int kill, int cash, int numLvl, int numCost, int powLvl, int powCost, Vector2f center)
 	{
 		scoreText.setString(std::to_string(score));
 		killText.setString(std::to_string(kill));
@@ -72,14 +82,22 @@ public:
 		killText.setPosition(center + Vector2f(WIDTH * .5 - 20, HEIGHT * -.5 + 100));
 		cashText.setOrigin(cashText.getLocalBounds().left, cashText.getLocalBounds().top);
 		cashText.setPosition(center + Vector2f(WIDTH * -.5 + 20, HEIGHT * .5 - 60));
+		pauseCashText = cashText;
+		pauseCashText.setColor(Color(255, 255, 255, 200));
+
+		numberUpgradeText.setString("Missile number:\nLevel: " + std::to_string(numLvl) + "\nMax level: 6\nUpgrade cost: " + std::to_string(numCost) + "\nT - Upgrade");
+		powerUpgradeText.setString("Missile damage:\nDamage: " + std::to_string(powLvl) + "\nMax damage: 400\nUpgrade cost: " + std::to_string(powCost) + "\nY - Upgrade");
 
 		if (hp>0) hpForeground.setSize(Vector2f(hp * 400 / maxHp, 20));
 		else hpForeground.setSize(Vector2f(0, 20));
 		hpBackground.setPosition(center + Vector2f(WIDTH * -.5 + 20, HEIGHT * -.5 + 20));
 		hpForeground.setPosition(center + Vector2f(WIDTH * -.5 + 20, HEIGHT * -.5 + 20));
 
-		pauseText.setPosition(center - Vector2f(0, 200));
-		controlsText.setPosition(center - Vector2f(-150, 20));
+		pauseText.setPosition(center - Vector2f(0, 300));
+		controlsText.setPosition(center - Vector2f(0, -150));
+		upgradeText.setPosition(center - Vector2f(0, 150));
+		powerUpgradeText.setPosition(center - Vector2f(0, 100));
+		numberUpgradeText.setPosition(center - Vector2f(500, 100));
 		pauseBackground.setPosition(center - Vector2f(WIDTH*.5f, HEIGHT*.5f));
 	}
 
@@ -97,5 +115,9 @@ public:
 		window.draw(pauseBackground);
 		window.draw(pauseText);
 		window.draw(controlsText);
+		window.draw(upgradeText);
+		window.draw(pauseCashText);
+		window.draw(powerUpgradeText);
+		window.draw(numberUpgradeText);
 	}
 };

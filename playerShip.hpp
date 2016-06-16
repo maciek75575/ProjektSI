@@ -49,6 +49,11 @@ public:
 		cash = 0;
 		playerMissles.clear();
 
+		upgrades.missleLevel = 1;
+		upgrades.misslePower = 50;
+		upgrades.misslePowerLvl = 1;
+		upgrades.healthCost = 500;
+
 		mis.init(missTex, rot, speedMissle, power);
 	}
 

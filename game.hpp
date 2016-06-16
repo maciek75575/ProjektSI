@@ -142,7 +142,7 @@ public:
 				deltaTime = tmp;
 			}
 
-			if (Keyboard::isKeyPressed(Keyboard::T))
+			if ((Keyboard::isKeyPressed(Keyboard::T)) && pauseFlag)
 			{
 				if (!tFlag)
 				{
@@ -152,7 +152,7 @@ public:
 			}
 			else tFlag = false;
 
-			if (Keyboard::isKeyPressed(Keyboard::Y))
+			if ((Keyboard::isKeyPressed(Keyboard::Y)) && pauseFlag)
 			{
 				if (!yFlag)
 				{
@@ -162,7 +162,7 @@ public:
 			}
 			else yFlag = false;
 
-			if (Keyboard::isKeyPressed(Keyboard::H))
+			if ((Keyboard::isKeyPressed(Keyboard::H)) && pauseFlag)
 			{
 				if (!hFlag)
 				{
@@ -216,16 +216,18 @@ public:
 			enemies01.addEnemy(Vector2f(WIDTH + 150.f, 100.f + (rand() % (HEIGHT - 200))));
 			wait = 1.5f + (rand() % 20) * .1f;
 		}
-
-		if (wait2 > 0.f) wait2 -= deltaTime;
-		else
-		{
-			enemies02.addEnemy(Vector2f(WIDTH + 150.f, 100.f + (rand() % (HEIGHT - 200))));
-			wait2 = 2.f + (rand() % 40) * .1f;
-		}
-
 		enemies01.control(deltaTime);
-		enemies02.control(deltaTime);
+
+		if (player01.killCount >= 20)
+		{
+			if (wait2 > 0.f) wait2 -= deltaTime;
+			else
+			{
+				enemies02.addEnemy(Vector2f(WIDTH + 150.f, 100.f + (rand() % (HEIGHT - 200))));
+				wait2 = 2.f + (rand() % 40) * .1f;
+			}
+			enemies02.control(deltaTime);
+		}
 
 		player01.collision(enemies01);
 		player01.collision(enemies02);
@@ -236,7 +238,7 @@ public:
 
 		Vector2f viewCenter(WIDTH * .5f + (player01.shipSprite.getPosition().x - WIDTH * .5f) * .15f, HEIGHT * .5f + (player01.shipSprite.getPosition().y - HEIGHT * .5f) * .15f);
 
-		myGui.update(player01.health, player01.maxHealth, player01.score, player01.killCount, player01.cash, viewCenter);
+		myGui.update(player01.health, player01.maxHealth, player01.score, player01.killCount, player01.cash, player01.upgrades.missleLevel, player01.upgrades.missleLevelCosts[player01.upgrades.missleLevel-1], player01.upgrades.misslePower, player01.upgrades.misslePowerCosts[player01.upgrades.misslePowerLvl-1], viewCenter);
 		myGui.draw(*window);
 
 		view.setCenter(viewCenter);
@@ -276,7 +278,7 @@ public:
 
 		Vector2f viewCenter(WIDTH * .5f + (player01.shipSprite.getPosition().x - WIDTH * .5f) * .15f, HEIGHT * .5f + (player01.shipSprite.getPosition().y - HEIGHT * .5f) * .15f);
 
-		myGui.update(player01.health, player01.maxHealth, player01.score, player01.killCount, player01.cash, viewCenter);
+		myGui.update(player01.health, player01.maxHealth, player01.score, player01.killCount, player01.cash, player01.upgrades.missleLevel, player01.upgrades.missleLevelCosts[player01.upgrades.missleLevel - 1], player01.upgrades.misslePower, player01.upgrades.misslePowerCosts[player01.upgrades.misslePowerLvl-1], viewCenter);
 		myGui.draw(*window);
 
 		gameOverText.setPosition(viewCenter - Vector2f(0, 70));
@@ -298,7 +300,7 @@ public:
 		enemies01.draw(*window);
 		enemies02.draw(*window);
 
-		myGui.update(player01.health, player01.maxHealth, player01.score, player01.killCount, player01.cash, viewCenter);
+		myGui.update(player01.health, player01.maxHealth, player01.score, player01.killCount, player01.cash, player01.upgrades.missleLevel, player01.upgrades.missleLevelCosts[player01.upgrades.missleLevel - 1], player01.upgrades.misslePower, player01.upgrades.misslePowerCosts[player01.upgrades.misslePowerLvl-1], viewCenter);
 		myGui.draw(*window);
 		myGui.drawPause(*window);
 
@@ -318,7 +320,7 @@ public:
 		enemies01.draw(*window);
 		enemies02.draw(*window);
 
-		myGui.update(player01.health, player01.maxHealth, player01.score, player01.killCount, player01.cash, viewCenter);
+		myGui.update(player01.health, player01.maxHealth, player01.score, player01.killCount, player01.cash, player01.upgrades.missleLevel, player01.upgrades.missleLevelCosts[player01.upgrades.missleLevel - 1], player01.upgrades.misslePower, player01.upgrades.misslePowerCosts[player01.upgrades.misslePowerLvl-1], viewCenter);
 		myGui.draw(*window);
 
 		bg.drawMenuBg(*window, viewCenter);
@@ -356,6 +358,9 @@ public:
 			contin.setCharacterSize(100);
 			newGame.setCharacterSize(80);
 			exit.setCharacterSize(80);
+			contin.setColor(Color(250, 250, 250, 250));
+			newGame.setColor(Color(250, 250, 250, 200));
+			exit.setColor(Color(250, 250, 250, 200));
 			contin.setOrigin(contin.getLocalBounds().left + contin.getLocalBounds().width*.5f, contin.getLocalBounds().top + contin.getLocalBounds().height*.5f);
 			newGame.setOrigin(newGame.getLocalBounds().left + newGame.getLocalBounds().width*.5f, newGame.getLocalBounds().top + newGame.getLocalBounds().height*.5f);
 			exit.setOrigin(exit.getLocalBounds().left + exit.getLocalBounds().width*.5f, exit.getLocalBounds().top + exit.getLocalBounds().height*.5f);
@@ -364,6 +369,9 @@ public:
 			contin.setCharacterSize(80);
 			newGame.setCharacterSize(100);
 			exit.setCharacterSize(80);
+			contin.setColor(Color(250, 250, 250, 200));
+			newGame.setColor(Color(250, 250, 250, 250));
+			exit.setColor(Color(250, 250, 250, 200));
 			contin.setOrigin(contin.getLocalBounds().left + contin.getLocalBounds().width*.5f, contin.getLocalBounds().top + contin.getLocalBounds().height*.5f);
 			newGame.setOrigin(newGame.getLocalBounds().left + newGame.getLocalBounds().width*.5f, newGame.getLocalBounds().top + newGame.getLocalBounds().height*.5f);
 			exit.setOrigin(exit.getLocalBounds().left + exit.getLocalBounds().width*.5f, exit.getLocalBounds().top + exit.getLocalBounds().height*.5f);
@@ -372,6 +380,9 @@ public:
 			contin.setCharacterSize(80);
 			newGame.setCharacterSize(80);
 			exit.setCharacterSize(100);
+			contin.setColor(Color(250, 250, 250, 200));
+			newGame.setColor(Color(250, 250, 250, 200));
+			exit.setColor(Color(250, 250, 250, 250));
 			contin.setOrigin(contin.getLocalBounds().left + contin.getLocalBounds().width*.5f, contin.getLocalBounds().top + contin.getLocalBounds().height*.5f);
 			newGame.setOrigin(newGame.getLocalBounds().left + newGame.getLocalBounds().width*.5f, newGame.getLocalBounds().top + newGame.getLocalBounds().height*.5f);
 			exit.setOrigin(exit.getLocalBounds().left + exit.getLocalBounds().width*.5f, exit.getLocalBounds().top + exit.getLocalBounds().height*.5f);
